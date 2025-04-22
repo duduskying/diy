@@ -6,11 +6,30 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# 安装必要的工具
+# 检查必要工具
+command -v curl >/dev/null 2>&1 || { echo "需要 curl，请先安装"; exit 1; }
+command -v wget >/dev/null 2>&1 || { echo "需要 wget，请先安装"; exit 1; }
+command -v openssl >/dev/null 2>&1 || { echo "需要 openssl，请先安装"; exit 1; }
+command -v uuidgen >/dev/null 2>&1 || { echo "需要 uuid-runtime，请先安装"; exit 1; }
+
+# 更新系统并安装依赖
 apt update && apt install -y curl wget uuid-runtime
+
+# 创建 V2Ray 配置目录
+mkdir -p /usr/local/etc/v2ray/ || { echo "无法创建 /usr/local/etc/v2ray/ 目录"; exit 1; }
 
 # 安装 V2Ray
 bash <(curl -L https://github.com/v2fly/v2ray-core/releases/latest/download/install-release.sh)
+if [ $? -ne 0 ]; then
+    echo "V2Ray 安装失败，请检查网络连接或 GitHub 访问权限"
+    exit 1
+fi
+
+# 检查 V2Ray 服务是否存在
+if ! systemctl is-enabled v2ray >/dev/null 2>&1; then
+    echo "V2Ray 服务未正确安装"
+    exit 1
+fi
 
 # 生成随机 UUID
 UUID=$(uuidgen)
@@ -39,7 +58,7 @@ if [ -z "$ARGO_DOMAIN" ]; then
 fi
 
 # 使用临时隧道域名生成自签名证书
-openssl req -x509 -newkey rsa:4096 -keyout /usr/local/etc/v2ray/v2ray.key -out /usr/local/etc/v2ray/v2ray.crt -days 365 -nodes -subj "/CN=$ARGO_DOMAIN"
+openssl req -x509 -newkey rsa:4096 -keyout /usr/local/etc/v2ray/v2ray.key -out /usr/local/etc/v2ray/v2ray.crt -days 365 -nodes -subj "/CN=$ARGO_DOMAIN" || { echo "证书生成失败"; exit 1; }
 
 # 创建 V2Ray 配置文件
 cat > /usr/local/etc/v2ray/config.json << EOF
