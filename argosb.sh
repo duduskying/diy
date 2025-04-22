@@ -42,6 +42,8 @@ export UUID=${uuid:-''}
 export port_vm_ws=${vmpt:-''}
 export ARGO_DOMAIN=${agn:-''}   
 export ARGO_AUTH=${agk:-''} 
+export YX_DOMAIN=${yxip:-''} 
+export YX_PORT=${yxpt:-''} 
 
 del(){
 if [[ -n $(ps -e | grep cloudflared) ]]; then
@@ -271,7 +273,7 @@ fi
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 
-vmatls_link1="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"vmess-ws-tls-argo-$hostname-443\", \"add\": \"104.16.0.0\", \"port\": \"443\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"auto\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$argodomain\", \"path\": \"/$UUID-vm?ed=2048\", \"tls\": \"tls\", \"sni\": \"$argodomain\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)"
+vmatls_link1="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"vmess-ws-tls-argo-$hostname-YX\", \"add\": \"$YX_DOMAIN\", \"port\": \"$YX_PORT\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"auto\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$argodomain\", \"path\": \"/$UUID-vm?ed=2048\", \"tls\": \"tls\", \"sni\": \"$argodomain\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)"
 echo "$vmatls_link1" > /etc/s-box-ag/jh.txt
 vmatls_link2="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"vmess-ws-tls-argo-$hostname-8443\", \"add\": \"104.17.0.0\", \"port\": \"8443\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"auto\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$argodomain\", \"path\": \"/$UUID-vm?ed=2048\", \"tls\": \"tls\", \"sni\": \"$argodomain\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)"
 echo "$vmatls_link2" >> /etc/s-box-ag/jh.txt
