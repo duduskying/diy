@@ -300,7 +300,7 @@ yellow "经检测，之前已使用Acme-yg脚本申请过Acme域名证书：$(ca
 green "是否使用 $(cat /root/ygkkkca/ca.log) 域名证书？"
 yellow "1：否！使用自签的证书 (回车默认)"
 yellow "2：是！使用 $(cat /root/ygkkkca/ca.log) 域名证书"
-readp "请选择【1-2】：" menu
+menu=1
 if [ -z "$menu" ] || [ "$menu" = "1" ] ; then
 zqzs
 else
@@ -310,7 +310,7 @@ else
 green "如果你有解析完成的域名，是否申请一个Acme域名证书？"
 yellow "1：否！继续使用自签的证书 (回车默认)"
 yellow "2：是！使用Acme-yg脚本申请Acme证书 (支持常规80端口模式与Dns API模式)"
-readp "请选择【1-2】：" menu
+menu=1
 if [ -z "$menu" ] || [ "$menu" = "1" ] ; then
 zqzs
 else
@@ -1176,6 +1176,56 @@ echo "二维码【v2rayn、nekobox、小火箭shadowrocket】"
 qrencode -o - -t ANSIUTF8 "$(cat /etc/s-box/tuic5.txt)"
 white "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo
+}
+
+githubup(){
+# GitHub 配置
+GITHUB_TOKEN="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"  # 替换成你的 token
+REPO_OWNER="duduskying"
+REPO_NAME="sub-api"
+GITHUB_FILE="vmess.txt"  # GitHub 上的文件名
+LOCAL_FILE="/etc/s-box/vm_ws_argols.txt"  # VPS 上的文件路径
+# 检查文件是否存在
+if [ ! -f "$LOCAL_FILE" ]; then
+    echo "错误：文件 $LOCAL_FILE 不存在！"
+    exit 1
+fi
+# 读取文件内容并 Base64 编码
+CONTENT=$(base64 -w 0 "$LOCAL_FILE")
+# 检查 GitHub 上是否已有该文件
+RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+    -H "Accept: application/vnd.github.v3+json" \
+    "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/contents/$GITHUB_FILE")
+SHA=$(echo "$RESPONSE" | jq -r '.sha')
+# 准备 JSON 数据
+if [ "$SHA" != "null" ]; then
+    DATA=$(jq -n \
+        --arg msg "Update vmess.txt" \
+        --arg content "$CONTENT" \
+        --arg sha "$SHA" \
+        '{message: $msg, content: $content, sha: $sha}')
+else
+    DATA=$(jq -n \
+        --arg msg "Add vmess.txt" \
+        --arg content "$CONTENT" \
+        '{message: $msg, content: $content}')
+fi
+
+# 上传文件
+RESULT=$(curl -s -X PUT \
+    -H "Authorization: token $GITHUB_TOKEN" \
+    -H "Accept: application/vnd.github.v3+json" \
+    -d "$DATA" \
+    "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/contents/$GITHUB_FILE")
+
+# 检查是否成功
+if echo "$RESULT" | jq -e '.content' > /dev/null; then
+    echo "✅ 文件已成功上传到 GitHub！"
+else
+    echo "❌ 上传失败："
+    echo "$RESULT" | jq .
+    exit 1
+fi
 }
 
 sb_client(){
@@ -3329,7 +3379,7 @@ green "请确保Cloudflare官网 --- Zero Trust --- Networks --- Tunnels已设�
 yellow "1：重置/设置Argo固定隧道域名"
 yellow "2：停止Argo固定隧道"
 yellow "0：返回上层"
-readp "请选择【0-2】：" menu
+menu=1
 if [ "$menu" = "1" ]; then
 cloudflaredargo
 readp "输入Argo固定隧道Token: " argotoken
@@ -3369,7 +3419,7 @@ echo
 yellow "1：重置Argo临时隧道域名"
 yellow "2：停止Argo临时隧道"
 yellow "0：返回上层"
-readp "请选择【0-2】：" menu
+menu=1
 if [ "$menu" = "1" ]; then
 cloudflaredargo
 i=0
@@ -3442,7 +3492,9 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 lnsb && blue "Sing-box-yg脚本安装成功，脚本快捷方式：sb" && cronsb
 echo
 wgcfgo
+cfargo_ym
 sbshare
+githubup
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 blue "Hysteria2/Tuic5自定义V2rayN配置、Clash-Meta/Sing-box客户端配置及私有订阅链接，请选择9查看"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
