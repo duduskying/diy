@@ -13,54 +13,24 @@ command -v openssl >/dev/null 2>&1 || { echo "需要 openssl，请先安装: sud
 command -v uuidgen >/dev/null 2>&1 || { echo "需要 uuid-runtime，请先安装: sudo apt install -y uuid-runtime"; exit 1; }
 
 # 更新系统并安装依赖
-apt update && apt install -y curl wget uuid-runtime unzip || { echo "依赖安装失败"; exit 1; }
+apt update && apt install -y curl wget uuid-runtime || { echo "依赖安装失败"; exit 1; }
 
 # 创建 V2Ray 配置目录
 mkdir -p /usr/local/etc/v2ray/ || { echo "无法创建 /usr/local/etc/v2ray/ 目录"; exit 1; }
-mkdir -p /usr/local/bin/ || { echo "无法创建 /usr/local/bin/ 目录"; exit 1; }
 
 # 安装 V2Ray
 echo "尝试安装 V2Ray..."
-V2RAY_INSTALL_URL="https://raw.githubusercontent.com/v2fly/v2ray-core/master/release/install-release.sh"
+V2RAY_INSTALL_URL="https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh"
 curl -L -s -o /tmp/install-release.sh "$V2RAY_INSTALL_URL"
 if [ $? -ne 0 ]; then
-    echo "无法下载 V2Ray 安装脚本，尝试备用方法..."
-    # 备用方法：直接下载最新 V2Ray 二进制文件
-    V2RAY_VERSION=$(curl -s https://api.github.com/repos/v2fly/v2ray-core/releases/latest | grep tag_name | cut -d'"' -f4)
-    V2RAY_ZIP="v2ray-linux-64.zip"
-    curl -L -s -o /tmp/$V2RAY_ZIP "https://github.com/v2fly/v2ray-core/releases/download/$V2RAY_VERSION/$V2RAY_ZIP"
-    if [ $? -ne 0 ]; then
-        echo "备用方法失败，无法下载 V2Ray 二进制文件，请检查网络连接或 GitHub 访问权限"
-        echo "建议：1. 检查 DNS (使用 8.8.8.8)；2. 使用代理；3. 手动下载 V2Ray"
-        exit 1
-    fi
-    # 解压并安装
-    unzip -o /tmp/$V2RAY_ZIP -d /tmp/v2ray
-    mv /tmp/v2ray/v2ray /usr/local/bin/v2ray
-    mv /tmp/v2ray/v2ctl /usr/local/bin/v2ctl
-    chmod +x /usr/local/bin/v2ray /usr/local/bin/v2ctl
-    # 创建 systemd 服务
-    cat > /etc/systemd/system/v2ray.service << EOF
-[Unit]
-Description=V2Ray Service
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=/usr/local/bin/v2ray -config /usr/local/etc/v2ray/config.json
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-EOF
-    systemctl daemon-reload
-else
-    # 使用官方安装脚本
-    bash /tmp/install-release.sh
-    if [ $? -ne 0 ]; then
-        echo "V2Ray 安装脚本执行失败，请检查日志或网络连接"
-        exit 1
-    fi
+    echo "无法下载 V2Ray 安装脚本，请检查网络连接或 GitHub 访问权限"
+    echo "建议：1. 检查 DNS (使用 8.8.8.8)；2. 使用代理；3. 手动安装 V2Ray"
+    exit 1
+fi
+bash /tmp/install-release.sh
+if [ $? -ne 0 ]; then
+    echo "V2Ray 安装脚本执行失败，请检查日志或网络连接"
+    exit 1
 fi
 
 # 检查 V2Ray 是否安装成功
