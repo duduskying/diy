@@ -297,7 +297,7 @@ vma_link11="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"TW-CF05\", \"add\": \"104.
 echo "$vma_link11" >> /etc/s-box-ag/jh.txt
 vma_link12="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"TW-CF06\", \"add\": \"104.27.0.0\", \"port\": \"2086\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"auto\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$argodomain\", \"path\": \"/$UUID-vm?ed=2048\", \"tls\": \"\"}" | base64 -w0)"
 echo "$vma_link12" >> /etc/s-box-ag/jh.txt
-vma_link13="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"TW-CF07\", \"add\": \"[2400:cb00:2049::]\", \"port\": \"2095\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"auto\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$argodomain\", \"path\": \"/$UUID-vm?ed=2048\", \"tls\": \"\"}" | base64 -w0)"
+vma_link13="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"TW-CF07-ipv6\", \"add\": \"[2400:cb00:2049::]\", \"port\": \"2095\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"auto\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$argodomain\", \"path\": \"/$UUID-vm?ed=2048\", \"tls\": \"\"}" | base64 -w0)"
 echo "$vma_link13" >> /etc/s-box-ag/jh.txt
 baseurl=$(base64 -w 0 < /etc/s-box-ag/jh.txt)
 echo "ArgoSB脚本安装完毕"
