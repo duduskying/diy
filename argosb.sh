@@ -44,6 +44,7 @@ export ARGO_DOMAIN=${agn:-''}
 export ARGO_AUTH=${agk:-''} 
 export YX_DOMAIN=${yxip:-''} 
 export YX_PORT=${yxpt:-''} 
+export GITHUB_TOKEN=${githubapi:-''}
 
 del(){
 if [[ -n $(ps -e | grep cloudflared) ]]; then
@@ -325,7 +326,6 @@ echo
 echo "---------------------------------------------------------"
 echo
 # GitHub 配置
-GITHUB_TOKEN=${GITHUB_TOKEN:?"必须设置 GITHUB_TOKEN 环境变量！"}
 REPO_OWNER="duduskying"
 REPO_NAME="sub-api"
 GITHUB_FILE="vmess.txt"  # GitHub 上的文件名
