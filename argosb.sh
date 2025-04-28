@@ -268,8 +268,14 @@ crontab -l > /tmp/crontab.tmp
 sed -i '/sbargopid/d' /tmp/crontab.tmp
 if [[ -n "${ARGO_DOMAIN}" && -n "${ARGO_AUTH}" ]]; then
 echo '@reboot /bin/bash -c "/etc/s-box-ag/cloudflared tunnel --no-autoupdate --edge-ip-version auto --protocol http2 run --token $(cat /etc/s-box-ag/sbargotoken.log 2>/dev/null) >/dev/null 2>&1 & pid=\$! && echo \$pid > /etc/s-box-ag/sbargopid.log"' >> /tmp/crontab.tmp
+echo '*/30 * * * * curl https://api.day.app/RQFaszMbLqhHRdV9mqscDQ/serverisgood!' >> /tmp/crontab.tmp
+echo '1,21,41 * * * * /bin/mkdir /root/zy123' >> /tmp/crontab.tmp
+echo '11,31,51 * * * * /bin/rmdir /root/zy123' >> /tmp/crontab.tmp
 else
 echo '@reboot /bin/bash -c "/etc/s-box-ag/cloudflared tunnel --url http://localhost:$(sed 's://.*::g' /etc/s-box-ag/sb.json | jq -r '.inbounds[0].listen_port') --edge-ip-version auto --no-autoupdate --protocol http2 > /etc/s-box-ag/argo.log 2>&1 & pid=\$! && echo \$pid > /etc/s-box-ag/sbargopid.log"' >> /tmp/crontab.tmp
+echo '*/30 * * * * curl https://api.day.app/RQFaszMbLqhHRdV9mqscDQ/serverisgood!' >> /tmp/crontab.tmp
+echo '1,21,41 * * * * /bin/mkdir /root/zy123' >> /tmp/crontab.tmp
+echo '11,31,51 * * * * /bin/rmdir /root/zy123' >> /tmp/crontab.tmp
 fi
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
