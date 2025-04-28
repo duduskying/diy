@@ -377,3 +377,32 @@ else
     echo "$RESULT" | jq .
     exit 1
 fi
+
+# 命令执行间隔（秒）
+INTERVAL=300  # 5分钟
+
+# 每次执行的持续时间（秒）
+DURATION=120  # 2分钟
+
+# 要执行的简单命令
+COMMANDS=(
+    "uptime"
+    "who"
+    "df -h"
+    "free -m"
+)
+
+while true; do
+    echo "开始执行命令以保持服务器活跃..."
+    
+    # 执行命令循环
+    for ((i=0; i<DURATION; i+=10)); do
+        # 随机选择一个命令
+        RANDOM_CMD=${COMMANDS[$RANDOM % ${#COMMANDS[@]}]}
+        eval "$RANDOM_CMD"
+        sleep 10  # 每10秒执行一次命令
+    done
+    
+    echo "命令执行完成，等待下一次执行（${INTERVAL}秒）..."
+    sleep "$INTERVAL"
+done
