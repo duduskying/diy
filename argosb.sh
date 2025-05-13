@@ -503,7 +503,7 @@ fi
 REPO_OWNER="duduskying"
 REPO_NAME="sub-api"
 GITHUB_FILE="vmess.txt"  # GitHub 上的文件名
-LOCAL_FILE="/etc/s-box-ag/jh.txt"  # VPS 上的文件路径
+LOCAL_FILE="nixag/list.txt"  # VPS 上的文件路径
 # 检查文件是否存在
 if [ ! -f "$LOCAL_FILE" ]; then
     echo "错误：文件 $LOCAL_FILE 不存在！"
